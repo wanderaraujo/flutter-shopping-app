@@ -1,27 +1,50 @@
 import 'package:flutter/material.dart';
-import 'package:shop/data/dummy_data.dart';
-import 'package:shop/models/Product.dart';
-import 'package:shop/widgets/product_item.dart';
+import 'package:shop/widgets/product_grid.dart';
 
+enum FilterOptions { Favorite, All }
 
-class ProductOverViewScreen extends StatelessWidget {
-  final List<Product> loadedProducts = DUMMY_PRODUCTS;
+class ProductOverViewScreen extends StatefulWidget {
+  @override
+  _ProductOverViewScreenState createState() => _ProductOverViewScreenState();
+}
+
+class _ProductOverViewScreenState extends State<ProductOverViewScreen> {
+  bool _showFavoriteOnly = false;
 
   @override
   Widget build(BuildContext context) {
+    // final Products products = Provider.of(context); // control state global
+
     return Scaffold(
-      appBar: AppBar(title: Text("Minha Loja")),
-      body: GridView.builder(
-        padding: const EdgeInsets.all(10),
-        itemBuilder: (ctx, i) => ProductItem(loadedProducts[i]),
-        itemCount: loadedProducts.length,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          childAspectRatio: 3 / 2,
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 10,
-        ),
+      appBar: AppBar(
+        title: Text("Minha Loja"),
+        actions: <Widget>[
+          PopupMenuButton(
+              onSelected: (FilterOptions selectedValue) {
+                setState(() {
+                  if (selectedValue == FilterOptions.Favorite) {
+                    // products.showFavoriteOnly();
+                    _showFavoriteOnly = true;
+                  } else {
+                    _showFavoriteOnly = false;
+                    // products.showAll();
+                  }
+                });
+              },
+              icon: Icon(Icons.more_vert),
+              itemBuilder: (_) => [
+                    PopupMenuItem(
+                      child: Text("Somente Favoritos"),
+                      value: FilterOptions.Favorite,
+                    ),
+                    PopupMenuItem(
+                      child: Text("Todos"),
+                      value: FilterOptions.All,
+                    ),
+                  ])
+        ],
       ),
+      body: ProductGrid(_showFavoriteOnly),
     );
   }
 }
