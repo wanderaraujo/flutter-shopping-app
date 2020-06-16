@@ -31,7 +31,8 @@ class ProductItem extends StatelessWidget {
         ),
         footer: GridTileBar(
           backgroundColor: Colors.black87,
-          leading: Consumer<Product>( // espefic consumer to change buttom componet 
+          leading: Consumer<Product>(
+            // espefic consumer to change buttom componet
             builder: (ctx, product, child) => IconButton(
               onPressed: () {
                 product.toogleFavorite();
@@ -48,6 +49,17 @@ class ProductItem extends StatelessWidget {
           trailing: IconButton(
             icon: Icon(Icons.shopping_cart),
             onPressed: () {
+              Scaffold.of(context).hideCurrentSnackBar();
+              Scaffold.of(context).showSnackBar(SnackBar(
+                content: Text("Produto adicionado com sucesso!"),
+                duration: Duration(seconds: 2),
+                action: SnackBarAction(
+                  label: 'Desfazer',
+                  onPressed: () {
+                    cart.remoteSingleItem(product.id);
+                  },
+                ),
+              ));
               cart.addItem(product);
             },
             color: Theme.of(context).accentColor,
