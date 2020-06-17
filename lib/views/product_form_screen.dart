@@ -1,7 +1,9 @@
-import 'dart:math';
+
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shop/providers/Product.dart';
+import 'package:shop/providers/products.dart';
 
 class ProductFormScreen extends StatefulWidget {
   @override
@@ -15,6 +17,26 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
   final _imageUrlController = TextEditingController();
   final _form = GlobalKey<FormState>();
   final _formData = Map<String, Object>();
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if(_formData.isEmpty){
+      final product = ModalRoute.of(context).settings.arguments as Product;
+     
+     if(product != null){
+      _formData['id'] = product.id;
+      _formData['title'] = product.title;
+      _formData['description'] = product.description;
+      _formData['price'] = product.price;
+      _formData['imageUrl'] = product.imageUrl;
+
+      _imageUrlController.text = _formData['imageUrl'];
+     }else{
+        _formData['price'] = '';
+     }
+    }
+  }
 
   void _updateImage() {
     if (isValidImageUrl(_imageUrlController.text)) {
@@ -39,13 +61,21 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
     }
 
     _form.currentState.save();
-    final newProduct = Product(
-      id: Random().nextDouble().toString(),
+    final product = Product(
+      id: _formData['id'],
       title: _formData['title'],
       description: _formData['description'],
       price: _formData['price'],
       imageUrl: _formData['imageUrl'],
     );
+    final products = Provider.of<Products>(context, listen: false);
+    if(_formData['id'] == null){
+      products.addProduct(product);
+    }else {
+      products.updateProduct(product);
+    }
+
+    Navigator.of(context).pop();
   }
 
   @override
@@ -84,6 +114,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
           child: ListView(
             children: <Widget>[
               TextFormField(
+                initialValue: _formData['title'],
                 decoration: InputDecoration(labelText: "Título"),
                 textInputAction: TextInputAction.next,
                 onFieldSubmitted: (_) {
@@ -98,6 +129,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                 },
               ),
               TextFormField(
+                initialValue: _formData['price'].toString(),
                 decoration: InputDecoration(labelText: "Preço"),
                 textInputAction: TextInputAction.next,
                 focusNode: _priceFocusNode,
@@ -118,23 +150,24 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                 },
               ),
               TextFormField(
+                initialValue: _formData['description'],
                 decoration: InputDecoration(labelText: "Descrição"),
                 maxLines: 3,
                 keyboardType: TextInputType.multiline,
                 textInputAction: TextInputAction.next,
-                onSaved: (value) => _formData['description'] = value,
+                onSaved: (value) => _formData[''] = value,
                 validator: (value) {
                   bool isEmpty = value.trim().isEmpty;
                   int qtd = 5;
-                  bool qtdIsValid = value.trim().length < qtd;
+                  // bool qtdIsValid = value.trim().length < qtd;
 
                   if (isEmpty) {
                     return 'Descrição não pode ser em branco';
                   }
 
-                  if (qtd > 0 || qtdIsValid) {
-                    return 'Descrição menor que ${qtd.toString()} caracteres';
-                  }
+                  // if (qtd > 0 && !qtdIsValid) {
+                  //   return 'Descrição menor que ${qtd.toString()} caracteres';
+                  // }
                   return null;
                 },
               ),
