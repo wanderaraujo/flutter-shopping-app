@@ -60,7 +60,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
         (endsWithImagePNG || endsWithImageJPG || endsWithImageJPEG);
   }
 
-  void _saveForm() {
+  Future<void> _saveForm() async {
     if (!_form.currentState.validate()) {
       return;
     }
@@ -78,8 +78,10 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
 
     final products = Provider.of<Products>(context, listen: false);
     if (_formData['id'] == null) {
-      products.addProduct(product).catchError((error) {
-        return showDialog<Null>(
+      try {
+        await products.addProduct(product);
+      } catch (e) {
+        await showDialog<Null>(
           context: context,
           builder: (ctx) => AlertDialog(
             title: Text("Ocorreu um erro!"),
@@ -95,12 +97,10 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
             ],
           ),
         );
-      }).then(
-        (_) {
-          changeLoading(false);
-          Navigator.of(context).pop();
-        },
-      );
+      } finally {
+        changeLoading(false);
+        Navigator.of(context).pop();
+      }
     } else {
       products.updateProduct(product);
       changeLoading(false);
