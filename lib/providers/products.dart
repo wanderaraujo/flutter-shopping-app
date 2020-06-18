@@ -7,7 +7,7 @@ import 'package:shop/exeptions/http_exeption.dart';
 import 'Product.dart';
 
 class Products with ChangeNotifier {
-  final String _baseUrl = "https://app-dashboard-7b60b.firebaseio.com/products";
+  final String _baseUrl = "/products";
 
   List<Product> _items = [];
 

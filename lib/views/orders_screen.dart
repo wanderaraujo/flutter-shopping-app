@@ -5,7 +5,28 @@ import 'package:shop/widgets/order_widget.dart';
 
 import 'orders.dart';
 
-class OrdersScreen extends StatelessWidget {
+class OrdersScreen extends StatefulWidget {
+  @override
+  _OrdersScreenState createState() => _OrdersScreenState();
+}
+
+class _OrdersScreenState extends State<OrdersScreen> {
+  bool _isLoading = true;
+
+  void changeLoading(bool load) {
+    setState(() {
+      _isLoading = load;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    Provider.of<Orders>(context, listen: false)
+        .loadOrders()
+        .then((value) => changeLoading(false));
+  }
+
   @override
   Widget build(BuildContext context) {
     final Orders orders = Provider.of(context);
@@ -14,10 +35,12 @@ class OrdersScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text("Meus Pedidos"),
       ),
-      body: ListView.builder(
-        itemCount: orders.itemsCount,
-        itemBuilder: (ctx, i) => OrderWidget(orders.items[i]),
-      ),
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator(),)
+          : ListView.builder(
+              itemCount: orders.itemsCount,
+              itemBuilder: (ctx, i) => OrderWidget(orders.items[i]),
+            ),
       drawer: AppDrawer(),
     );
   }
