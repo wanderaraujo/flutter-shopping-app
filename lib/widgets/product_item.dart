@@ -48,10 +48,15 @@ class ProductItem extends StatelessWidget {
                       ),
                     ],
                   ),
-                ).then((value) {
-                  if (value)
-                    Provider.of<Products>(context, listen: false)
-                        .deleteProduct(product.id);
+                ).then((value) async {
+                  if (value) {
+                    try {
+                      await Provider.of<Products>(context, listen: false)
+                          .deleteProduct(product.id);
+                    } catch (error) {
+                      print(error.toString());
+                    }
+                  }
                 });
               },
             ),

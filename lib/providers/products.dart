@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shop/exeptions/http_exeption.dart';
 
 import 'Product.dart';
 
@@ -122,6 +123,7 @@ class Products with ChangeNotifier {
       if (response.statusCode >= 400) {
         _items.insert(index, product);
         notifyListeners();
+        throw HttpException('Ocorreu um erro na exlusão do produto!');
       }
     }
   }
