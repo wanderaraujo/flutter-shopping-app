@@ -118,7 +118,7 @@ class Products with ChangeNotifier {
       _items.remove(product);
       notifyListeners();
 
-      final response = await http.delete("$_baseUrl/${product.id}.jso");
+      final response = await http.delete("$_baseUrl/${product.id}.json");
 
       if (response.statusCode >= 400) {
         _items.insert(index, product);
