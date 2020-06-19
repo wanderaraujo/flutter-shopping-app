@@ -11,8 +11,9 @@ class Products with ChangeNotifier {
   final String _baseUrl = "${Constants.BASE_API_URL}/products";
 
   String _token;
+  String _userId;
 
-  Products(this._token, this._items);
+  Products([this._token, this._userId, this._items = const []]);
 
   List<Product> _items = [];
 
@@ -30,17 +31,22 @@ class Products with ChangeNotifier {
     final response = await http.get("$_baseUrl.json?auth=$_token");
     Map<String, dynamic> data = json.decode(response.body);
 
+    final favResponse = await http.get(
+        "${Constants.BASE_API_URL}/userFavorites/$_userId.json?auth=$_token");
+    final favMap = json.decode(favResponse.body);
+
     _items.clear();
 
     if (data != null) {
       data.forEach((productId, productData) {
+        final isFavorite = favMap == null ? false : favMap[productId] ?? false;
         _items.add(Product(
           id: productId,
           title: productData['title'],
           description: productData['description'],
           price: productData['price'],
           imageUrl: productData['imageUrl'],
-          isFavorite: productData['isFavorite'],
+          isFavorite: isFavorite,
         ));
       });
       notifyListeners();
@@ -57,7 +63,6 @@ class Products with ChangeNotifier {
           'description': newProduct.description,
           'price': newProduct.price,
           'imageUrl': newProduct.imageUrl,
-          'isFavorite': newProduct.isFavorite,
         },
       ),
     );
@@ -88,7 +93,6 @@ class Products with ChangeNotifier {
             'description': product.description,
             'price': product.price,
             'imageUrl': product.imageUrl,
-            'isFavorite': product.isFavorite,
           },
         ),
       );
@@ -104,7 +108,8 @@ class Products with ChangeNotifier {
       _items.remove(product);
       notifyListeners();
 
-      final response = await http.delete("$_baseUrl/${product.id}.json?auth=$_token");
+      final response =
+          await http.delete("$_baseUrl/${product.id}.json?auth=$_token");
 
       if (response.statusCode >= 400) {
         _items.insert(index, product);

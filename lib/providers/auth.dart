@@ -5,11 +5,16 @@ import 'package:http/http.dart' as http;
 import 'package:shop/exeptions/firebase_exception.dart';
 
 class Auth extends ChangeNotifier {
+  String _userId;
   String _token;
   DateTime _expireDate;
 
   bool get isAuth {
     return token != null;
+  }
+
+  String get userId {
+    return isAuth ? _userId : null;
   }
 
   String get token {
@@ -40,6 +45,7 @@ class Auth extends ChangeNotifier {
       throw AuthException(responseBody["error"]["message"]);
     } else {
       _token = responseBody["idToken"];
+      _userId = responseBody["localId"];
       _expireDate = DateTime.now().add(
         Duration(
           seconds: int.parse(responseBody["expiresIn"]),

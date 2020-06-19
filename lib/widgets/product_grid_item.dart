@@ -37,7 +37,7 @@ class ProductGridItem extends StatelessWidget {
             // espefic consumer to change buttom componet
             builder: (ctx, product, child) => IconButton(
               onPressed: () {
-                product.toogleFavorite(auth.token);
+                product.toogleFavorite(auth.token, auth.userId);
               },
               icon: Icon(
                   product.isFavorite ? Icons.favorite : Icons.favorite_border),
