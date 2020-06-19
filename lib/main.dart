@@ -12,6 +12,7 @@ import 'package:shop/views/product_form_screen.dart';
 import 'package:shop/views/products_screen.dart';
 import 'package:shop/widgets/product_detail_screen.dart';
 
+import 'views/auth_home_screen.dart';
 import 'views/products_overview_screen.dart';
 
 void main() => runApp(MyApp());
@@ -34,8 +35,7 @@ class MyApp extends StatelessWidget {
             fontFamily: 'Lato'),
         // home: ProductOverViewScreen(),
         routes: {
-          AppRoutes.AUTH: (ctx) => AuthScreen(),
-          AppRoutes.HOME: (ctx) => ProductOverViewScreen(),
+          AppRoutes.AUTH_OR_HOME: (ctx) => AuthOrHomeScreen(),
           AppRoutes.ORDERS: (ctx) => OrdersScreen(),
           AppRoutes.PRODUCT_DETAIL: (ctx) => ProductDetailScreen(),
           AppRoutes.CART: (ctx) => CartScreen(),

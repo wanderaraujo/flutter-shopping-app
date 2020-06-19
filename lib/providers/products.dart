@@ -3,11 +3,12 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shop/exeptions/http_exeption.dart';
+import 'package:shop/utils/constants.dart';
 
 import 'Product.dart';
 
 class Products with ChangeNotifier {
-  final String _baseUrl = "/products";
+  final String _baseUrl = "${Constants.BASE_API_URL}/products";
 
   List<Product> _items = [];
 

@@ -2,9 +2,24 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shop/exeptions/firebase_exception.dart';
 
 class Auth extends ChangeNotifier {
-  
+  String _token;
+  DateTime _expireDate;
+
+  bool get isAuth {
+    return token != null;
+  }
+
+  String get token {
+    if(_token != null && _expireDate != null && _expireDate.isAfter(DateTime.now())){
+      return _token;
+    }else {
+      return null;
+    }
+  }
+
   Future<void> _authenticate(
       String email, String password, String urlSegment) async {
     final url =
@@ -19,7 +34,19 @@ class Auth extends ChangeNotifier {
       }),
     );
 
-    print(json.decode(response.body));
+    final responseBody = json.decode(response.body);
+
+    if (responseBody["error"] != null) {
+      throw AuthException(responseBody["error"]["message"]);
+    } else {
+      _token = responseBody["idToken"];
+      _expireDate = DateTime.now().add(
+        Duration(
+          seconds: int.parse(responseBody["expiresIn"]),
+        ),
+      );
+      notifyListeners();
+    }
   }
 
   Future<void> signup(String email, String password) async {
