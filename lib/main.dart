@@ -4,7 +4,6 @@ import 'package:shop/providers/auth.dart';
 import 'package:shop/providers/cart.dart';
 import 'package:shop/providers/products.dart';
 import 'package:shop/utils/AppRoutes.dart';
-import 'package:shop/views/auth_screen.dart';
 import 'package:shop/views/cart_screen.dart';
 import 'package:shop/views/orders.dart';
 import 'package:shop/views/orders_screen.dart';
@@ -13,7 +12,6 @@ import 'package:shop/views/products_screen.dart';
 import 'package:shop/widgets/product_detail_screen.dart';
 
 import 'views/auth_home_screen.dart';
-import 'views/products_overview_screen.dart';
 
 void main() => runApp(MyApp());
 
@@ -22,10 +20,22 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => new Products()),
-        ChangeNotifierProvider(create: (_) => new Cart()),
-        ChangeNotifierProvider(create: (_) => new Orders()),
         ChangeNotifierProvider(create: (_) => new Auth()),
+        ChangeNotifierProxyProvider<Auth, Products>(
+          create: (_) =>  new Products(null, []),
+          update: (ctx, auth, previousProducts) => new Products(
+            auth.token,
+            previousProducts.items,
+          ),
+        ),
+        ChangeNotifierProvider(create: (_) => new Cart()),
+        ChangeNotifierProxyProvider<Auth, Orders>(
+          create: (_) =>  new Orders(null, []),
+          update: (ctx, auth, previousProducts) => new Orders(
+            auth.token,
+            previousProducts.items,
+          ),
+        ),
       ],
       child: MaterialApp(
         title: 'Minha Loja',
